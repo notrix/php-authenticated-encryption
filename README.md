@@ -14,18 +14,18 @@ Include the Trustpilot class, and invoke it:
 
 ```php
     // Domain of your site
-    $domain = 'example.com'
+    $domain = 'example.com';
 
     // Get the base64 encoded keys from the Trustpilot site:
     $encryptKey = 'dfkkdfj....';
     $authKey = 'dj83lshi....';
     
     // The payload with your order data:
-    $payload = [
+    $payload = array(
         'email' => 'john@doe.com',
         'name'  => 'John Doe',
-        'ref'   => '1234'
-    ];
+        'ref'   => '1234',
+    );
 
     $trustpilot = new Trustpilot($domain, $encryptKey, $authKey);
     $trustpilotInvitationLink = $trustpilot->getInvitationLink($payload);
