@@ -23,13 +23,19 @@ class Trustpilot
     protected $authKey;
 
     /**
+     * @var string
+     */
+    protected $secretKey;
+
+    /**
      * Class constructor
      *
      * @param string $domain     domain name of your project
      * @param string $encryptKey base64 encoded string (optional)
      * @param string $authKey    base64 encoded string (optional)
+     * @param string $secretKey  unique link secret key (optional)
      */
-    public function __construct($domain, $encryptKey = null, $authKey = null)
+    public function __construct($domain, $encryptKey = null, $authKey = null, $secretKey = null)
     {
         $this->domain = $domain;
         if ($encryptKey) {
@@ -38,9 +44,14 @@ class Trustpilot
         if ($authKey) {
             $this->setAuthKey($authKey);
         }
+        if ($secretKey) {
+            $this->setSecretKey($secretKey);
+        }
     }
 
     /**
+     * Get invitation link for sharing with your customers
+     *
      * @param array  $payload    array of your order data
      * @param string $baseDomain base trustpilot domain (optional)
      *
@@ -48,6 +59,10 @@ class Trustpilot
      */
     public function getInvitationLink(array $payload, $baseDomain = self::DEFAULT_BASE_DOMAIN)
     {
+        if (!$this->domain) {
+            throw new \InvalidArgumentException('Parameter domain is required');
+        }
+
         return sprintf(
             'https://%s/evaluate-bgl/%s?p=%s',
             $baseDomain,
@@ -57,12 +72,45 @@ class Trustpilot
     }
 
     /**
+     * Get unique link for collecting reviews in iframe form
+     *
+     * @param string $reference  unique reference number of customers order
+     * @param string $email      email of your customer
+     * @param string $name       name of your customer
+     * @param string $baseDomain base trustpilot domain (optional)
+     *
+     * @return string
+     */
+    public function getUniqueLink($reference, $email, $name, $baseDomain = self::DEFAULT_BASE_DOMAIN)
+    {
+        if (!$this->domain || !$this->secretKey) {
+            throw new \InvalidArgumentException('Parameters domain and secretKey are required');
+        }
+
+        return sprintf(
+            'https://%s/evaluate/%s?a=%s&b=%s&c=%s&e=%s',
+            $baseDomain,
+            $this->domain,
+            $reference,
+            base64_encode($email),
+            urlencode($name),
+            hash('sha1', $this->secretKey . $email . $reference)
+        );
+    }
+
+    /**
+     * Get encrypted payload code
+     *
      * @param array $payload array of your order data
      *
      * @return string
      */
     public function encryptPayload(array $payload)
     {
+        if (!$this->encryptKey || !$this->authKey) {
+            throw new \InvalidArgumentException('Parameters encryptKey and authKey are required');
+        }
+
         // Generate an Initialization Vector (IV) according to the block size (128 bits)
         $iVector = openssl_random_pseudo_bytes(
             openssl_cipher_iv_length('AES-128-CBC')
@@ -117,6 +165,20 @@ class Trustpilot
     public function setAuthKey($authKey, $encoded = true)
     {
         $this->authKey = $encoded ? base64_decode($authKey) : $encoded;
+
+        return $this;
+    }
+
+    /**
+     * Setter of SecretKey
+     *
+     * @param string $secretKey
+     *
+     * @return static
+     */
+    public function setSecretKey($secretKey)
+    {
+        $this->secretKey = $secretKey;
 
         return $this;
     }
