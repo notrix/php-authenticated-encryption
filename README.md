@@ -2,22 +2,33 @@
 
 Library for authenticated encryption used with Trustpilot.
 
+# Installation
+
+```
+composer require notrix/trustpilot-links
+```
+
 # Usage
 
 Include the Trustpilot class, and invoke it:
 
 ```php
-    // To get the keys, base64 decode the keys you copy from the Trustpilot site:
-    $encrypt_key = base64_decode('dfkkdfj....');
-    $auth_key = base64_decode('dj83lshi....');
-    // The payload should be a JSON object with your order data:
+    // Domain of your site
+    $domain = 'example.com'
+
+    // Get the base64 encoded keys from the Trustpilot site:
+    $encryptKey = 'dfkkdfj....';
+    $authKey = 'dj83lshi....';
+    
+    // The payload with your order data:
     $payload = [
         'email' => 'john@doe.com',
-        'name' => 'John Doe',
-        'ref' => '1234'
+        'name'  => 'John Doe',
+        'ref'   => '1234'
     ];
-    $payload = json_encode($payload);
-    $trustpilot = new Trustpilot; 
-    $encryptedData = $trustpilot-> {'encryptPayload'}($payload, $encrypt_key, $auth_key);
-    $trustpilot_invitation_link = "https://www.trustpilot.com/evaluate-bgl/<domainName>?p=" . $encryptedData
+
+    $trustpilot = new Trustpilot($domain, $encryptKey, $authKey);
+    $trustpilotInvitationLink = $trustpilot->getInvitationLink($payload);
+    
+    // https://www.trustpilot.com/evaluate-bgl/example.com?p=cGF5bG9hZA==
 ```

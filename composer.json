@@ -1,0 +1,16 @@
+{
+    "type": "library",
+    "name": "notrix/trustpilot-links",
+    "description": "TrustPilot link generation service",
+    "keywords": ["trustpilot", "business link"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vaidas Lažauskas",
+            "email": "vaidas@notrix.lt"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "Trustpilot": "" }
+    }
+}
