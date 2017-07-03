@@ -72,7 +72,27 @@ class Trustpilot
     }
 
     /**
-     * Get unique link for collecting reviews in iframe form
+     * Get general reviews link for collecting in iframe form
+     *
+     * @param string $baseDomain base trustpilot domain (optional)
+     *
+     * @return string
+     */
+    public function getReviewsLink($baseDomain = self::DEFAULT_BASE_DOMAIN)
+    {
+        if (!$this->domain) {
+            throw new \InvalidArgumentException('Parameter domain is required');
+        }
+
+        return sprintf(
+            'https://%s/evaluate/%s',
+            $baseDomain,
+            $this->domain
+        );
+    }
+
+    /**
+     * Get unique reviews link for collecting in iframe form
      *
      * @param string $reference  unique reference number of customers order
      * @param string $email      email of your customer
@@ -83,14 +103,13 @@ class Trustpilot
      */
     public function getUniqueLink($reference, $email, $name, $baseDomain = self::DEFAULT_BASE_DOMAIN)
     {
-        if (!$this->domain || !$this->secretKey) {
-            throw new \InvalidArgumentException('Parameters domain and secretKey are required');
+        if (!$this->secretKey) {
+            throw new \InvalidArgumentException('Parameter secretKey is required');
         }
 
         return sprintf(
-            'https://%s/evaluate/%s?a=%s&b=%s&c=%s&e=%s',
-            $baseDomain,
-            $this->domain,
+            '%s?a=%s&b=%s&c=%s&e=%s',
+            $this->getReviewsLink($baseDomain),
             $reference,
             base64_encode($email),
             urlencode($name),
