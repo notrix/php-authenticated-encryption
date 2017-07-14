@@ -42,7 +42,7 @@ Autoload with composer or include the Trustpilot class and invoke it:
     $trustpilot = new Trustpilot($domain);
     $trustpilotInvitationLink = $trustpilot->getReviewsLink();
 
-    // https://www.trustpilot.com/evaluate/example.com
+    // https://www.trustpilot.com/evaluate/embed/example.com
 ```
 
 ### Unique Link for embedding reviews iframe
@@ -61,5 +61,5 @@ Autoload with composer or include the Trustpilot class and invoke it:
     $trustpilot = new Trustpilot($domain, null, null, $secretKey);
     $trustpilotInvitationLink = $trustpilot->getUniqueLink($reference, $email, $name);
 
-    // https://www.trustpilot.com/evaluate/example.com?a=1234&b=am9obkBkb2UuY29t&c=John+Doe&e=e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
+    // https://www.trustpilot.com/evaluate/embed/example.com?a=1234&b=am9obkBkb2UuY29t&c=John+Doe&e=e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 ```
